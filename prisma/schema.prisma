@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum SimulationStatus {
+  not_started
+}
+
+enum SystemEventType {
+  world_initialized
+}
+
+model World {
+  id        String           @id
+  name      String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  status    SimulationStatus @default(not_started)
+  settings  WorldSettings?
+  events    SystemEvent[]
+}
+
+model WorldSettings {
+  id        String   @id @default(uuid()) @db.Uuid
+  worldId   String   @unique
+  settings  Json     @default("{}")
+  updatedAt DateTime @updatedAt
+  world     World    @relation(fields: [worldId], references: [id], onDelete: Cascade)
+}
+
+model SystemEvent {
+  id        String          @id @default(uuid()) @db.Uuid
+  worldId   String
+  eventType SystemEventType
+  payload   Json
+  createdAt DateTime        @default(now())
+  world     World           @relation(fields: [worldId], references: [id], onDelete: Restrict)
+
+  @@index([worldId, createdAt])
+}

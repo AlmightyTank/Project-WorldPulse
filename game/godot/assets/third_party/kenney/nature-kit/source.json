@@ -1,0 +1,10 @@
+{
+    "name":  "Nature Kit",
+    "version":  "2.1",
+    "author":  "Kenney",
+    "source_url":  "https://kenney.nl/assets/nature-kit",
+    "archive":  "kenney_nature-kit.zip",
+    "sha256":  "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+    "license":  "CC0-1.0",
+    "license_url":  "https://creativecommons.org/publicdomain/zero/1.0/"
+}

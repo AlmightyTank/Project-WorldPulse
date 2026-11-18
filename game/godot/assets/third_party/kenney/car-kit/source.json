@@ -1,0 +1,10 @@
+{
+    "name":  "Car Kit",
+    "version":  "3.1",
+    "author":  "Kenney",
+    "source_url":  "https://kenney.nl/assets/car-kit",
+    "archive":  "kenney_car-kit.zip",
+    "sha256":  "fac7dacac5c7874348cf19729af3ef205f3d366493edaf0a827d93f4fdf3d0c4",
+    "license":  "CC0-1.0",
+    "license_url":  "https://creativecommons.org/publicdomain/zero/1.0/"
+}

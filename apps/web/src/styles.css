@@ -1,0 +1,154 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color-scheme: dark;
+  color: #edf1ec;
+  background: #141818;
+  font-synthesis: none;
+  line-height: 1.5;
+  --panel: #1b2221;
+  --section: #202827;
+  --line: #394641;
+  --muted: #a9b7b0;
+  --teal: #8cd8c2;
+  --mono: ui-monospace, Consolas, monospace;
+  --inset: clamp(1rem, 3.6vw, 2rem);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+h1, h2, p, dl, dd { margin: 0; }
+code { font-family: var(--mono); }
+button:not(:disabled) { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+button:focus-visible { outline: 2px solid var(--teal); outline-offset: 4px; }
+
+.shell {
+  width: min(100%, 67rem);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2.5rem);
+  overflow-wrap: anywhere;
+}
+
+.masthead,
+.provenance {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+}
+
+.masthead {
+  padding-block: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.wordmark { font-size: 1.13rem; font-weight: 680; letter-spacing: -0.03em; }
+.edition, .connection, .label, .provenance { font-family: var(--mono); font-size: 0.8125rem; }
+.edition, .label, .provenance { color: var(--muted); }
+
+main { padding-top: clamp(2rem, 6vw, 5rem); }
+h1 {
+  margin-bottom: clamp(1rem, 3vw, 1.75rem);
+  font-size: clamp(2.25rem, 1.7rem + 2.6vw, 4rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+}
+
+.readout {
+  border: 1px solid var(--line);
+  border-radius: 0.375rem;
+  background: var(--panel);
+}
+
+.readout-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.65rem var(--inset);
+  border-bottom: 1px solid var(--line);
+  background: var(--section);
+  border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.connection {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--muted);
+}
+
+.signal { width: 0.55rem; height: 0.55rem; flex-shrink: 0; border: 1px solid currentColor; }
+.readout[data-state='ready'] .connection { color: var(--teal); }
+.readout[data-state='ready'] .signal { background: currentColor; }
+
+button {
+  min-height: 44px;
+  max-width: 100%;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid #778981;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+button:not(:disabled):hover { background: #35443f; text-decoration: underline; text-underline-offset: 0.19em; }
+button:not(:disabled):active { background: #42524c; box-shadow: inset 0 2px 0 #141818; }
+button:disabled { border-style: dashed; color: var(--muted); }
+
+.readout-body { min-height: 19rem; }
+.primary {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.5rem, 4vw, 3rem) var(--inset);
+}
+
+.label { margin-bottom: 0.4rem; }
+.world h2 {
+  font-size: clamp(1.85rem, 1.4rem + 2vw, 3.25rem);
+  letter-spacing: -0.045em;
+  font-weight: 570;
+  line-height: 1.12;
+}
+
+.simulation dd { font-size: clamp(1.125rem, 0.95rem + 0.9vw, 1.6rem); font-weight: 550; }
+
+.details {
+  display: grid;
+  margin-inline: var(--inset);
+  border-top: 1px solid var(--line);
+}
+
+.details > div { min-width: 0; padding-block: 0.9rem; }
+.details > div + div { border-top: 1px solid var(--line); }
+.details dd { font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+.details code, .details time { font-family: var(--mono); font-size: 0.875rem; }
+
+.empty { padding: clamp(1.5rem, 4vw, 3rem) var(--inset); }
+.empty h2 { font-size: clamp(1.4rem, 1.1rem + 1.15vw, 2rem); font-weight: 570; line-height: 1.2; }
+.empty p { max-width: 48ch; margin-top: 0.6rem; color: var(--muted); }
+.provenance { padding-block: 1rem 2rem; }
+
+@media (min-width: 36rem) {
+  .primary { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: end; }
+  .details > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 0.5rem; }
+  .details .label { margin-bottom: 0; }
+}
+
+@media (min-width: 53rem) {
+  .readout-body { min-height: 16rem; }
+  .details { grid-template-columns: minmax(0, 1fr) repeat(2, minmax(0, 1.6fr)); }
+  .details > div { display: block; padding: 1rem 1.25rem 1.4rem; }
+  .details > div:first-child { padding-inline-start: 0; }
+  .details > div + div { border-top: 0; border-left: 1px solid var(--line); }
+  .details .label { margin-bottom: 0.4rem; }
+}
+
+@media (forced-colors: active) {
+  .readout[data-state='ready'] .signal { background: CanvasText; }
+}

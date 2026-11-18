@@ -1,0 +1,112 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/world_status.gd" id="1_status"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMaterial"]
+sky_top_color = Color(0.25, 0.43, 0.53, 1)
+sky_horizon_color = Color(0.76, 0.81, 0.79, 1)
+ground_bottom_color = Color(0.16, 0.21, 0.19, 1)
+ground_horizon_color = Color(0.76, 0.81, 0.79, 1)
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMaterial")
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 2
+ambient_light_color = Color(0.81, 0.89, 1, 1)
+ambient_light_sky_contribution = 0.0
+ambient_light_energy = 0.45
+
+[sub_resource type="StandardMaterial3D" id="GroundMaterial"]
+albedo_color = Color(0.4, 0.49, 0.43, 1)
+roughness = 0.9
+
+[sub_resource type="PlaneMesh" id="GroundMesh"]
+material = SubResource("GroundMaterial")
+size = Vector2(180, 180)
+
+[sub_resource type="StandardMaterial3D" id="ConcreteMaterial"]
+albedo_color = Color(0.66, 0.65, 0.58, 1)
+roughness = 0.87
+
+[sub_resource type="BoxMesh" id="PadMesh"]
+material = SubResource("ConcreteMaterial")
+size = Vector3(7.5, 0.3, 5.4)
+
+[sub_resource type="BoxMesh" id="BlockMesh"]
+material = SubResource("ConcreteMaterial")
+size = Vector3(1.35, 1.15, 1.35)
+
+[sub_resource type="StandardMaterial3D" id="ClayMaterial"]
+albedo_color = Color(0.69, 0.36, 0.22, 1)
+roughness = 0.83
+
+[sub_resource type="CylinderMesh" id="MarkerMesh"]
+material = SubResource("ClayMaterial")
+top_radius = 0.56
+bottom_radius = 0.8
+height = 2.7
+radial_segments = 8
+
+[sub_resource type="StyleBoxFlat" id="StatusBackground"]
+content_margin_left = 22.0
+content_margin_top = 14.0
+content_margin_right = 22.0
+content_margin_bottom = 14.0
+bg_color = Color(0.075, 0.12, 0.1, 1)
+
+[node name="World" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.72, -0.68, 0)
+light_color = Color(1, 0.92, 0.8, 1)
+shadow_enabled = true
+
+[node name="Camera" type="Camera3D" parent="."]
+position = Vector3(9, 5.5, 13)
+rotation = Vector3(-0.29, 0.6055, 0)
+current = true
+fov = 43.0
+far = 180.0
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("GroundMesh")
+cast_shadow = 0
+
+[node name="PlaceholderPad" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.15, 0)
+mesh = SubResource("PadMesh")
+
+[node name="PlaceholderMarker" type="MeshInstance3D" parent="."]
+position = Vector3(-0.55, 1.65, -0.35)
+mesh = SubResource("MarkerMesh")
+
+[node name="PlaceholderBlock" type="MeshInstance3D" parent="."]
+position = Vector3(1.55, 0.875, 0.85)
+mesh = SubResource("BlockMesh")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="WorldStatus" type="PanelContainer" parent="HUD"]
+offset_left = 42.0
+offset_top = 42.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StatusBackground")
+script = ExtResource("1_status")
+
+[node name="Readout" type="Label" parent="HUD/WorldStatus"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.95, 0.96, 0.92, 1)
+theme_override_font_sizes/font_size = 32
+text = "World status: checking..."
+
+[node name="Request" type="HTTPRequest" parent="HUD/WorldStatus"]
+timeout = 3.0
+body_size_limit = 65536
+max_redirects = 0

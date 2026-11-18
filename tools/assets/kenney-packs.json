@@ -1,0 +1,108 @@
+{
+  "license": {
+    "id": "CC0-1.0",
+    "name": "Creative Commons Zero v1.0 Universal",
+    "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution_required": false
+  },
+  "packs": [
+    {
+      "slug": "city-kit-suburban",
+      "name": "City Kit Suburban",
+      "version": "2.0",
+      "author": "Kenney",
+      "source_url": "https://kenney.nl/assets/city-kit-suburban",
+      "archive": "kenney_city-kit-suburban.zip",
+      "sha256": "5869c35cf30b1c87bdb2d197b6d325eebadd2ef08ea27f04797e8e08d77a9a39",
+      "models_root": "Models/GLB format",
+      "texture": "Models/GLB format/Textures/colormap.png",
+      "license_file": "License.txt"
+    },
+    {
+      "slug": "city-kit-commercial",
+      "name": "City Kit Commercial",
+      "version": "2.1",
+      "author": "Kenney",
+      "source_url": "https://kenney.nl/assets/city-kit-commercial",
+      "archive": "kenney_city-kit-commercial.zip",
+      "sha256": "f8b09b081c2bb88bcc126e2dec1cb40fd0dad7e7e591b6c26aaefe96fb35276b",
+      "models_root": "Models/GLB format",
+      "texture": "Models/GLB format/Textures/colormap.png",
+      "license_file": "License.txt"
+    },
+    {
+      "slug": "city-kit-roads",
+      "name": "City Kit Roads",
+      "version": "2.2",
+      "author": "Kenney",
+      "source_url": "https://kenney.nl/assets/city-kit-roads",
+      "archive": "kenney_city-kit-roads.zip",
+      "sha256": "374a4552115cbd11b4ec5c930ee31a533562dc78a09af249a655d03f7ea3b959",
+      "models_root": "Models/GLB format",
+      "texture": "Models/GLB format/Textures/colormap.png",
+      "license_file": "License.txt"
+    },
+    {
+      "slug": "animated-characters-protagonists",
+      "name": "Animated Characters Protagonists",
+      "version": "1.1",
+      "author": "Kenney",
+      "source_url": "https://kenney.nl/assets/animated-characters-protagonists",
+      "archive": "kenney_animated-characters-protagonists.zip",
+      "sha256": "ec3787de70fa2200256848d74201b10f6b6c3126594e9857bf989753312c2b84",
+      "models_root": "Model",
+      "texture": null,
+      "license_file": "License.txt"
+    },
+    {
+      "slug": "car-kit",
+      "name": "Car Kit",
+      "version": "3.1",
+      "author": "Kenney",
+      "source_url": "https://kenney.nl/assets/car-kit",
+      "archive": "kenney_car-kit.zip",
+      "sha256": "fac7dacac5c7874348cf19729af3ef205f3d366493edaf0a827d93f4fdf3d0c4",
+      "models_root": "Models/GLB format",
+      "texture": "Models/GLB format/Textures/colormap.png",
+      "license_file": "License.txt"
+    },
+    {
+      "slug": "nature-kit",
+      "name": "Nature Kit",
+      "version": "2.1",
+      "author": "Kenney",
+      "source_url": "https://kenney.nl/assets/nature-kit",
+      "archive": "kenney_nature-kit.zip",
+      "sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "models_root": "Models/GLTF format",
+      "texture": null,
+      "license_file": "License.txt"
+    },
+    {
+      "slug": "foliage-pack",
+      "name": "Foliage Pack",
+      "version": "1.0 (undated in License.txt)",
+      "author": "Kenney",
+      "source_url": "https://kenney.nl/assets/foliage-pack",
+      "archive": "kenney_foliage-pack.zip",
+      "sha256": "33bd564f2cebb6a68bee9a798650d669571a389a437b0bd601d257ca2b5e7aed",
+      "models_root": null,
+      "texture": null,
+      "license_file": "License.txt",
+      "note": "2D sprite pack (PNG, spritesheet, vector). No 3D models; acquired and licensed but not selected for the 3D city."
+    },
+    {
+      "slug": "mini-characters",
+      "name": "Mini Characters",
+      "version": "2.0",
+      "author": "Kenney",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "archive": "kenney_mini-characters.zip",
+      "sha256": "add348e98ab9e23d9973c4740ef2c5cceb229c742106aca2d56b30a8f1241bb7",
+      "models_root": "Models/GLB format",
+      "texture": "Models/GLB format/Textures/colormap.png",
+      "license_file": "License.txt",
+      "note": "Static characters (no skeleton or clips); used for visual comparison only."
+    }
+  ]
+}

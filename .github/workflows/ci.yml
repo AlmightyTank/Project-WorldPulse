@@ -1,0 +1,82 @@
+name: CI
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: worldpulse
+          POSTGRES_PASSWORD: worldpulse_ci_only
+          POSTGRES_DB: worldpulse
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U worldpulse -d worldpulse"
+          --health-interval 3s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:7.4-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 3s --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL: postgresql://worldpulse:worldpulse_ci_only@127.0.0.1:5432/worldpulse
+      REDIS_URL: redis://127.0.0.1:6379
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run db:migrate
+      - name: Ensure migrations match the Prisma schema
+        run: npx --no-install prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code
+      - run: npm run db:seed
+      - run: npm run test:integration
+      - run: npm run build
+      - run: npm run assets:validate
+
+  godot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GODOT_VERSION: 4.7.2-stable
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Godot
+        run: |
+          asset="Godot_v${GODOT_VERSION}_linux.x86_64"
+          base="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}"
+          cd "$RUNNER_TEMP"
+          curl --fail --silent --show-error --location --retry 3 "$base/$asset.zip" -o "$asset.zip"
+          curl --fail --silent --show-error --location --retry 3 "$base/SHA512-SUMS.txt" -o SHA512-SUMS.txt
+          grep -F " $asset.zip" SHA512-SUMS.txt | sha512sum --check --strict
+          unzip -q "$asset.zip"
+          mv "$asset" godot
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import and run the project headless
+        shell: bash
+        run: |
+          godot --version
+          godot --headless --path game/godot --editor --import 2>&1 | tee "$RUNNER_TEMP/godot-import.log"
+          if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$RUNNER_TEMP/godot-import.log"; then exit 1; fi
+          godot --headless --path game/godot --script res://tests/offline_smoke.gd 2>&1 | tee "$RUNNER_TEMP/godot-smoke.log"
+          if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$RUNNER_TEMP/godot-smoke.log"; then exit 1; fi
+          godot --headless --path game/godot --script res://tests/validate_assets.gd 2>&1 | tee "$RUNNER_TEMP/godot-assets.log"
+          if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$RUNNER_TEMP/godot-assets.log"; then exit 1; fi
+          for scene in AssetGallery CharacterAnimationTest ScaleReference QABenchmark; do
+            log="$RUNNER_TEMP/godot-$scene.log"
+            godot --headless --path game/godot --quit-after 10 "res://scenes/development/$scene.tscn" 2>&1 | tee "$log"
+            if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$log"; then exit 1; fi
+          done
