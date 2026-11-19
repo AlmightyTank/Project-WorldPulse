@@ -5,7 +5,8 @@
 | v0.1A | Project Foundation | Implemented; hosted CI run pending |
 | v0.1A.1 | Kenney Asset Foundation | Implemented with known gaps; hosted CI pending |
 | v0.1A.2 | Kenney Asset Refinement | Locally complete; hosted CI unverified |
-| v0.1B | World Scene & Visual Foundation | Not started; follows v0.1A.2 |
+| v0.1B-A | Terrain, City Layout & Road Foundation | Implemented locally; hosted CI unverified. See [World Layout](WORLD-LAYOUT.md). |
+| v0.1B-B | Buildings, Neighborhood Composition & City Landmarks | Implemented locally; hosted CI unverified. See [Building Catalog](BUILDING-CATALOG.md). |
 | v0.1C | City layout and environment | Pending |
 | v0.1D | Authoritative simulation engine and world clock | Pending |
 | v0.2 | Citizens and basic participation | Pending |
@@ -43,6 +44,12 @@ The gallery comparison places representative buildings, roads, a vehicle, trees 
 The original in-place Walk works on all four protagonists through `CharacterVisualState`. No new asset pack or external animation was imported. Walk contact sheets were reviewed, automated animation and UI checks passed, and the final GPU population run used Walk on all 30 protagonists. See [QA results](ASSET-QA.md).
 
 The closeout gallery comparison hides the catalog and uses a cool ambient fill at night so road markings and the citizen remain visible. Gallery input checks passed for comparison/reset, lighting, grid, orbit, pan, zoom and asset selection. Walk now matches 1.256618 m/s reference travel; moving contact and in-place transition reviews passed on all four rigs. The local asset-refinement scope is complete. Hosted CI remains unverified; slopes, turns, variable-speed physics and transition foot locking are not part of this slice. See [Asset QA](ASSET-QA.md) for evidence and limits.
+
+## v0.1B-B buildings and district composition
+
+48 explicit buildings occupy eight built plots within an 11-plot connected town: 18 residential, 18 market, 4 square shops and 8 civic. The targeted site-finish pass adds four roof-only palette variants, bounded lawns, entrance paving and two market courts in place of two shops. This is not the B-C park/prop/decor slice. Four shared streets on each axis replace isolated district loops, using 120 unchanged 8 m road wrappers. Opposing rows face separate streets; each entrance has a validated clear 2 m corridor. The plaza is now 24 × 24 m at its original center, with a stronger 14 m primitive beacon. The three contiguous Greenbelt reserves remain empty. Measured building scales, imported assets and Main startup are unchanged.
+
+Validation rejects unknown assets, wrappers, ids, districts or plots, footprints outside their plot, overlaps, road clearance under 1 m, unsupported rotations, wrong frontage and non-empty placement errors, and it reports every failure with a `Placement <id>:` prefix instead of dropping a building. F10 toggles footprint and orientation debug. Building constraints, measured dimensions and block composition are in [Building Catalog](BUILDING-CATALOG.md); GPU numbers are in [QA results](ASSET-QA.md).
 
 ## v0.1A verification record (historical)
 

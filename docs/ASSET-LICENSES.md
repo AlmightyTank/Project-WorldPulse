@@ -33,6 +33,12 @@ change; all other pixels, including markings and sidewalks, remain identical.
 The upstream atlas and GLBs remain unchanged, so their recorded hashes still apply.
 The derivative retains the source's CC0 provenance.
 
+## WorldPulse residential roof derivatives
+
+`WorldBuildings._apply_roof()` creates four in-memory atlas derivatives of the CC0 City Kit Suburban 2.0 `models/Textures/colormap.png`. No upstream file is overwritten. The 512 × 512 atlas changes only rectangle `(32,128,32,128)`: exactly 4,096 pixels per variant. Terracotta `#935e4f`, slate `#586478`, muted olive `#797c5b` and taupe `#77665e` retain the original swatch shading through its green-channel brightness. Stable placement-id hashes select the variant; materials and textures are cached per World build.
+
+The six placed house meshes were inspected: roof triangles sample X=48 in atlas row 128–255; walls/trim use X=48/240 in row 256–383, windows X=368 in row 128–255, and original shrubs X=112 in row 384–511. No triangle crosses those regions. Tests check triangle isolation, unchanged non-roof pixels and untouched commercial materials. Overrides apply only to these audited town houses, not the gallery or global asset loader. Imported mesh geometry, UVs, filtering, walls, windows, shrubs and road corrections remain unchanged. These runtime derivatives retain the source's CC0 provenance.
+
 ## WorldPulse Walk (v0.1A.2)
 
 `game/godot/assets/animations/protagonist_walk.tres` is an original, mathematically

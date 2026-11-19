@@ -81,6 +81,12 @@ jobs:
           if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$RUNNER_TEMP/godot-controls.log"; then exit 1; fi
           godot --headless --path game/godot --script res://tests/gallery_controls.gd 2>&1 | tee "$RUNNER_TEMP/godot-gallery-controls.log"
           if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$RUNNER_TEMP/godot-gallery-controls.log"; then exit 1; fi
+          godot --headless --path game/godot --script res://tests/world_foundation.gd 2>&1 | tee "$RUNNER_TEMP/godot-world.log"
+          if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$RUNNER_TEMP/godot-world.log"; then exit 1; fi
+          godot --headless --path game/godot --script res://tests/world_buildings.gd 2>&1 | tee "$RUNNER_TEMP/godot-buildings.log"
+          if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$RUNNER_TEMP/godot-buildings.log"; then exit 1; fi
+          godot --headless --path game/godot --quit-after 10 res://scenes/world/World.tscn 2>&1 | tee "$RUNNER_TEMP/godot-world-startup.log"
+          if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$RUNNER_TEMP/godot-world-startup.log"; then exit 1; fi
           for scene in AssetGallery CharacterAnimationTest ScaleReference QABenchmark; do
             log="$RUNNER_TEMP/godot-$scene.log"
             godot --headless --path game/godot --quit-after 10 "res://scenes/development/$scene.tscn" 2>&1 | tee "$log"

@@ -1,0 +1,58 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/founders_world.gd" id="1_world"]
+[ext_resource type="Script" path="res://scripts/world_camera.gd" id="2_camera"]
+
+[sub_resource type="Environment" id="Daylight"]
+background_mode = 1
+background_color = Color(0.79, 0.84, 0.82, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.89, 0.94, 1, 1)
+ambient_light_energy = 0.62
+
+[node name="World" type="Node3D"]
+script = ExtResource("1_world")
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Daylight")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-52, -35, 0)
+light_color = Color(1, 0.95, 0.86, 1)
+light_energy = 0.75
+
+[node name="Land" type="Node3D" parent="."]
+
+[node name="Roads" type="Node3D" parent="."]
+
+[node name="Buildings" type="Node3D" parent="."]
+
+[node name="Residential" type="Node3D" parent="Buildings"]
+
+[node name="Commercial" type="Node3D" parent="Buildings"]
+
+[node name="Civic" type="Node3D" parent="Buildings"]
+
+[node name="BuildingsDebug" type="Node3D" parent="Buildings"]
+visible = false
+
+[node name="Landmarks" type="Node3D" parent="."]
+
+[node name="WorldPulseBeacon" type="Node3D" parent="Landmarks"]
+
+[node name="Camera" type="Camera3D" parent="."]
+current = true
+far = 650.0
+script = ExtResource("2_camera")
+
+[node name="DistrictBounds" type="Node3D" parent="."]
+visible = false
+
+[node name="RoadConnections" type="Node3D" parent="."]
+visible = false
+
+[node name="Grid" type="Node3D" parent="."]
+visible = false
+
+[node name="Overlay" type="CanvasLayer" parent="."]
+visible = false
