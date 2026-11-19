@@ -24,6 +24,32 @@ Each imported pack keeps the original licence text next to its models:
 `game/godot/assets/third_party/kenney/<pack>/LICENSE.txt`, with a `source.json` recording
 the pack slug, author, version, source URL and archive SHA-256.
 
+## WorldPulse road palette derivative (v0.1A.2)
+
+`game/godot/assets/materials/roads/colormap.png` derives from the City Kit Roads 2.2
+CC0 atlas. `tools/assets/build-road-atlas.py` reproduces it: asphalt `#666b80`
+becomes `#3a3c3f`, and shoulder `#515566` becomes `#2d2f32`. Exactly 24,576 pixels
+change; all other pixels, including markings and sidewalks, remain identical.
+The upstream atlas and GLBs remain unchanged, so their recorded hashes still apply.
+The derivative retains the source's CC0 provenance.
+
+## WorldPulse Walk (v0.1A.2)
+
+`game/godot/assets/animations/protagonist_walk.tres` is an original, mathematically
+baked WorldPulse gait. `game/godot/tools/generate_protagonist_walk.gd` uses the CC0
+Kenney Protagonists rig's rest geometry and the Idle clip's track layout, but does
+not sample its motion or slow down Run. No external animation was imported.
+This records the Walk's origin without changing the Kenney source license or
+assigning a license to WorldPulse code or original assets.
+
+Candidates reviewed but not imported for Walk:
+
+| Candidate | Review outcome |
+| --- | --- |
+| Kenney Animated Characters Protagonists, Retro and Survivors (CC0) | Idle, Run and Jump only; no upstream Walk. The existing Protagonists import remains in use. |
+| Kenney Blocky Characters (CC0) | Walk animates rigid nodes, not the Protagonists skeleton. |
+| Godot `tps-demo` (visual assets CC BY 3.0) | No compatible rig imported; no demo art or clips used. |
+
 ## Rules
 
 - Source only `https://kenney.nl/assets/<slug>`. No third-party re-hosts or asset sites.

@@ -78,7 +78,55 @@ Then verify the assets and clips headlessly:
 godot --headless --path game/godot --script res://tests/validate_assets.gd
 ```
 
-Expected: `PASS: 50 Kenney assets load and animate.` and exit code 0.
+Expected: `PASS: 50 Kenney assets load; protagonist states and road overrides validated.` and exit code 0.
+
+### Road palette derivative
+
+The road correction lives outside the third-party import tree. Regenerate it with
+Python and Pillow installed:
+
+```powershell
+python tools/assets/build-road-atlas.py
+godot --headless --path game/godot --import
+```
+
+The script asserts the inspected Roads 2.2 palette and changed-pixel counts.
+`KenneyAssets.instance()` applies a cached material copy only to the `roads`
+category. It preserves the original material settings and swaps only the atlas;
+traffic props and other categories keep their original materials. Reimporting
+Kenney assets does not overwrite this WorldPulse derivative.
+
+### Project-authored protagonist Walk
+
+The Kenney importer still exports only Idle, Run and Jump. After a Godot import,
+regenerate the separate Walk resource and check it from the repository root:
+
+```powershell
+godot --headless --path game/godot --script res://tools/generate_protagonist_walk.gd
+godot --headless --path game/godot --script res://tools/check_protagonist_walk.gd
+```
+
+The generator bakes an in-place 1.04 s loop to `res://assets/animations/protagonist_walk.tres`
+using 104 intervals. Each foot is in stance for 60% of its cycle; the feet are half
+a cycle apart, retaining double support. Heel/toe roll and a two-bone leg solve use
+the rig's rest geometry. Unreachable ankle targets abort the bake before overwriting
+the resource. At the manifest scale of 0.478128, the reference travel speed is
+1.256618 m/s (115.385 steps/min). The clip does not move the character node: future
+world movement must match this speed, or retune and repeat contact review.
+Slopes, turns and variable-speed gameplay are not validated. See
+[provenance](ASSET-LICENSES.md#worldpulse-walk-v01a2).
+
+To use Walk, create one `CharacterVisualState` per visual, call `bind(player)` on
+its `AnimationPlayer`, and request states with `play(&"Walk")` or the corresponding
+Idle, Run or Jump name. `bind()` validates and installs Walk in an instance-local
+animation library and starts Idle. `get_state()` and `state_changed` expose the
+current state. Idle, Walk and Run loop; state changes blend over 0.12 s. Jump plays
+once and returns to the last requested locomotion state, including requests made
+mid-jump. Repeating the active state does not restart its clip.
+
+The local CI definition runs the headless Walk checker and the character scene with
+`CHARACTER_SELF_TEST=1` in addition to the existing asset and startup checks.
+See [QA results](ASSET-QA.md) for renderer and visual evidence.
 
 ## Machine validation
 

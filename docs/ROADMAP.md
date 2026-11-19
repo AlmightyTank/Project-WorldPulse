@@ -4,7 +4,8 @@
 | --- | --- | --- |
 | v0.1A | Project Foundation | Implemented; hosted CI run pending |
 | v0.1A.1 | Kenney Asset Foundation | Implemented with known gaps; hosted CI pending |
-| v0.1B | World Scene & Visual Foundation | Not started; follows v0.1A.1 |
+| v0.1A.2 | Kenney Asset Refinement | Locally complete; hosted CI unverified |
+| v0.1B | World Scene & Visual Foundation | Not started; follows v0.1A.2 |
 | v0.1C | City layout and environment | Pending |
 | v0.1D | Authoritative simulation engine and world clock | Pending |
 | v0.2 | Citizens and basic participation | Pending |
@@ -19,15 +20,31 @@
 
 Later slices are planning placeholders, not current capabilities.
 
-v0.1A is code-complete and locally verified. It is not marked complete yet: the hosted GitHub Actions run could not be executed because this checkout has no Git remote. Push the repository, confirm the `CI` workflow passes, then mark v0.1A complete. v0.1A.1 sits between v0.1A and v0.1B.
+v0.1A is code-complete and was verified locally as recorded below. Completion still requires a passing hosted `CI` run.
+
+## Current verification status
+
+- `origin` is `https://github.com/AlmightyTank/Project-WorldPulse.git`. Local `main` is one commit ahead of `origin/main`: `160982b` (`Build WorldPulse foundation and asset pipeline`) follows `c9d4b11` (`Initial commit`).
+- Authenticated GitHub CLI reads succeeded. `gh run list` returned no runs and `gh workflow list --all` listed no workflows. Hosted CI remains unverified. No commit or push was made during this review.
+- The final local rerun passed lint, typecheck, all 17 tests, build and asset validation. Godot passed headless import, offline smoke, the asset test, all four development scene starts, the control self-test and all 244 headless Walk checks. The GPU Walk review passed 1,656 checks, and native Windows-message character control tests passed 64 checks.
+- The local CI definition adds the headless Walk checker and `CHARACTER_SELF_TEST=1`, with `SCRIPT ERROR:`/`ERROR:` log scans. It preserves the prior checks. These changes have not run on GitHub Actions.
+- The local Docker daemon was not running, so integration tests could not be rerun. The historical passing result below is unchanged.
 
 ## v0.1A.1 asset foundation
 
 The Kenney library, import pipeline, development scenes and local checks are in place. See [Asset Import](ASSET-IMPORT.md), [Asset Catalog](ASSET-CATALOG.md), [Asset Licenses](ASSET-LICENSES.md), [Art Direction](ART-DIRECTION.md), and [QA results](ASSET-QA.md).
 
-Open items: the protagonist pack has no Walk clip (Run is the available locomotion clip), Foliage Pack is 2D-only and excluded from the 3D import, and road asphalt needs visual tuning. Hosted CI remains unverified because this checkout has no remote. No city, AI, traffic simulation or broadcast work was started.
+The baseline protagonist pack has no Walk clip (Run is its locomotion clip), Foliage Pack is 2D-only and excluded from the 3D import, and the asphalt needed visual tuning. No city, AI, traffic simulation or broadcast work was started.
 
-## v0.1A verification record
+## v0.1A.2 asset refinement
+
+The gallery comparison places representative buildings, roads, a vehicle, trees and a protagonist together for scale and material review. The seven imported Nature Kit trees cover the initial tree library; bushes, rocks and grass are available in the same source archive but are not imported. A project-owned road override fixes the lavender asphalt without changing the Kenney originals.
+
+The original in-place Walk works on all four protagonists through `CharacterVisualState`. No new asset pack or external animation was imported. Walk contact sheets were reviewed, automated animation and UI checks passed, and the final GPU population run used Walk on all 30 protagonists. See [QA results](ASSET-QA.md).
+
+The closeout gallery comparison hides the catalog and uses a cool ambient fill at night so road markings and the citizen remain visible. Gallery input checks passed for comparison/reset, lighting, grid, orbit, pan, zoom and asset selection. Walk now matches 1.256618 m/s reference travel; moving contact and in-place transition reviews passed on all four rigs. The local asset-refinement scope is complete. Hosted CI remains unverified; slopes, turns, variable-speed physics and transition foot locking are not part of this slice. See [Asset QA](ASSET-QA.md) for evidence and limits.
+
+## v0.1A verification record (historical)
 
 Verified locally on Windows with Node 22.23.5, Docker Desktop, PostgreSQL 17 in Compose, and Godot 4.7.2:
 

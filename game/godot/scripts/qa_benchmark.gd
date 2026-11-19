@@ -34,6 +34,7 @@ var sampled_seconds := 0.0
 var counted_frames := 0.0
 var camera: Camera3D
 var instances: Array[Node3D] = []
+var citizen_visuals: Array[CharacterVisualState] = []
 
 
 func _ready() -> void:
@@ -155,7 +156,14 @@ func _build_population() -> void:
 		for column in 10:
 			var asset_id: String = CITIZEN_IDS[index % CITIZEN_IDS.size()]
 			var position := Vector3(-13.5 + column * 3.0, 0, -4.0 + row * 3.0)
-			_place(asset_id, position, 180.0)
+			var citizen := _place(asset_id, position, 180.0)
+			if citizen != null:
+				var player := KenneyAssets._find_player(citizen)
+				var visual := CharacterVisualState.new()
+				var walking := visual.bind(player) and visual.play(CharacterVisualState.WALK)
+				_add_check(asset_id, "Walk", walking, "native Walk through CharacterVisualState")
+				if walking:
+					citizen_visuals.append(visual)
 			index += 1
 	camera.position = Vector3(0, 7.5, 22)
 	camera.look_at(Vector3(0, 1.0, 0), Vector3.UP)

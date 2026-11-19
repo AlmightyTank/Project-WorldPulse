@@ -37,10 +37,11 @@ const PRESETS := [
 		"name": "Night",
 		"sun_rotation": Vector3(-34, 130, 0),
 		"sun_energy": 0.18,
-		"sun_color": Color(0.55, 0.68, 1.0),
-		"sky_top": Color(0.02, 0.04, 0.1),
-		"sky_horizon": Color(0.08, 0.12, 0.22),
-		"ambient": 0.3,
+		"sun_color": Color(0.72, 0.80, 1.0),
+		"sky_top": Color(0.10, 0.14, 0.23),
+		"sky_horizon": Color(0.28, 0.32, 0.42),
+		"ambient": 0.46,
+		"ambient_color": Color(0.78, 0.85, 1.0),
 		"exposure": 1.15,
 	},
 ]
@@ -49,6 +50,7 @@ var camera: Camera3D
 var sun: DirectionalLight3D
 var world_environment: WorldEnvironment
 var grid_root: Node3D
+var catalog_sections: Array[Node3D] = []
 var metrics_label: Label
 var selection_label: Label
 var preset_label: Label
@@ -73,9 +75,13 @@ func _ready() -> void:
 	_build_ground()
 	_build_grid()
 	_build_sections()
+	_build_comparison()
 	_build_ui()
 	_apply_preset(OS.get_environment("GALLERY_PRESET").to_int())
-	_update_camera()
+	if OS.get_environment("GALLERY_VIEW") == "comparison":
+		_focus_comparison()
+	else:
+		_update_camera()
 
 
 func _build_environment() -> void:
@@ -148,6 +154,7 @@ func _build_sections() -> void:
 		section.name = str(definition["title"]).replace(" ", "")
 		section.position = definition["position"]
 		add_child(section)
+		catalog_sections.append(section)
 
 		var heading := Label3D.new()
 		heading.text = definition["title"]
@@ -193,6 +200,50 @@ func _build_sections() -> void:
 			index += 1
 
 
+func _build_comparison() -> void:
+	var stage := Node3D.new()
+	stage.name = "ScaleComparison"
+	add_child(stage)
+	for x in [-12.0, -4.0, 4.0, 12.0]:
+		_comparison_asset(stage, "road_straight", Vector3(x, 0, 0))
+	_comparison_asset(stage, "res_building_type_f", Vector3(-8, 0, -11))
+	_comparison_asset(stage, "com_building_k", Vector3(8, 0, -11))
+	_comparison_asset(stage, "veh_sedan", Vector3(3, 0.03, 1.5), 90.0)
+	_comparison_asset(stage, "tree_default", Vector3(-15, 0, -6), 26.0, 0.8)
+	_comparison_asset(stage, "tree_small", Vector3(14, 0, -6), -42.0, 0.95)
+	_play_idle(_comparison_asset(stage, "char_protagonist_skater_male_a", Vector3(-6, 0, -4.8), 180.0))
+
+
+func _comparison_asset(stage: Node3D, id: String, position: Vector3, angle := 0.0, size_factor := 1.0) -> KenneyAsset:
+	var asset := KenneyAsset.new()
+	asset.asset_id = id
+	asset.add_collision = false
+	asset.position = position
+	asset.rotation_degrees.y = angle
+	asset.scale = Vector3.ONE * size_factor
+	stage.add_child(asset)
+	var label := Label3D.new()
+	label.visible = false
+	asset.add_child(label)
+	items.append({ "node": asset, "asset": KenneyAssets.find(id), "label": label, "wrapper": asset })
+	return asset
+
+
+func _focus_comparison() -> void:
+	_set_catalog_visible(false)
+	focus = Vector3(0, 2.2, -4.5)
+	yaw = 16.0
+	elevation = 28.0
+	distance = 36.0
+	_update_camera()
+
+
+func _set_catalog_visible(enabled: bool) -> void:
+	for section in catalog_sections:
+		section.visible = enabled
+	metadata_clear()
+
+
 func _play_idle(wrapper: KenneyAsset) -> void:
 	var player := _find_animation_player(wrapper)
 	if player != null and player.has_animation("Idle"):
@@ -223,7 +274,6 @@ func _build_ui() -> void:
 	selection_label.text = "Selection\n\nClick an asset to inspect it."
 
 	preset_label = Label.new()
-	preset_label.text = "Drag orbit   Shift+drag pan   Wheel zoom   R reset   1 day  2 evening  3 night   G grid"
 	preset_label.add_theme_color_override("font_color", Color(0.85, 0.92, 0.89))
 	preset_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.7))
 	preset_label.add_theme_constant_override("shadow_offset_x", 1)
@@ -266,13 +316,17 @@ func _apply_preset(index: int) -> void:
 	sky_material.sky_horizon_color = preset["sky_horizon"]
 	sky_material.ground_horizon_color = preset["sky_horizon"].darkened(0.25)
 	sky_material.ground_bottom_color = preset["sky_horizon"].darkened(0.6)
+	var has_fill := preset.has("ambient_color")
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR if has_fill else Environment.AMBIENT_SOURCE_SKY
+	environment.ambient_light_color = preset.get("ambient_color", Color.WHITE)
+	environment.ambient_light_sky_contribution = 0.0 if has_fill else 1.0
 	environment.ambient_light_energy = preset["ambient"]
 	environment.tonemap_exposure = preset["exposure"]
 	sun.rotation_degrees = preset["sun_rotation"]
 	sun.light_energy = preset["sun_energy"]
 	sun.light_color = preset["sun_color"]
 	if preset_label != null:
-		preset_label.text = "Lighting: %s   |   Drag orbit   Shift+drag pan   Wheel zoom   R reset   1 day  2 evening  3 night   G grid" % preset["name"]
+		preset_label.text = "Lighting: %s   |   Drag orbit   Shift+drag pan   Wheel zoom   R reset   1 day  2 evening  3 night   G grid   C comparison" % preset["name"]
 
 
 func _update_camera() -> void:
@@ -296,7 +350,7 @@ func _process(delta: float) -> void:
 	if metrics_timer < 0.25:
 		return
 	metrics_timer = 0.0
-	metrics_label.text = "FPS %d\nDraw calls %d\nTriangles %d\nAssets %d" % [
+	metrics_label.text = "FPS %d\nDraw calls %d\nTriangles %d\nInstances %d" % [
 		Engine.get_frames_per_second(),
 		int(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)),
 		int(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME)),
@@ -333,6 +387,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		match (event as InputEventKey).keycode:
 			KEY_R:
+				_set_catalog_visible(true)
 				focus = Vector3.ZERO
 				yaw = -45.0
 				elevation = 34.0
@@ -346,6 +401,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				_apply_preset(2)
 			KEY_G:
 				grid_root.visible = not grid_root.visible
+			KEY_C:
+				_focus_comparison()
 	if event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT and not (event as InputEventMouseButton).pressed:
 		var button := event as InputEventMouseButton
 		if button.position.distance_to(drag_origin) < 6.0:
@@ -359,6 +416,8 @@ func _select_at(screen_position: Vector2) -> void:
 	var best_distance := INF
 	for item: Dictionary in items:
 		var node: Node3D = item["node"]
+		if not node.is_visible_in_tree():
+			continue
 		var bounds := _world_bounds(item["wrapper"])
 		var hit: Variant = bounds.intersects_ray(from, direction)
 		if hit == null:
@@ -376,7 +435,7 @@ func _select_at(screen_position: Vector2) -> void:
 	(best["label"] as Label3D).modulate = Color(0.45, 1.0, 0.85)
 	var asset: Dictionary = best["asset"]
 	var dimensions := _world_bounds(best["wrapper"]).size
-	selection_label.text = "%s\n\nPack  %s\nCategory  %s\nWorld scale  %.4gx\nSize  %.1f x %.1f x %.1f m\nCollision  %s\nSource  %s" % [
+	selection_label.text = "%s\n\nPack  %s\nCategory  %s\nWorld scale  %.4fx\nSize  %.1f x %.1f x %.1f m\nCollision  %s\nSource  %s" % [
 		asset["id"], asset["pack"], asset["category"], float(asset.get("scale", 1.0)),
 		dimensions.x, dimensions.y, dimensions.z,
 		"box" if asset.get("collision", false) else "none",

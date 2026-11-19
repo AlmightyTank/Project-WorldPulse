@@ -75,6 +75,12 @@ jobs:
           if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$RUNNER_TEMP/godot-smoke.log"; then exit 1; fi
           godot --headless --path game/godot --script res://tests/validate_assets.gd 2>&1 | tee "$RUNNER_TEMP/godot-assets.log"
           if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$RUNNER_TEMP/godot-assets.log"; then exit 1; fi
+          godot --headless --path game/godot --script res://tools/check_protagonist_walk.gd 2>&1 | tee "$RUNNER_TEMP/godot-walk.log"
+          if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$RUNNER_TEMP/godot-walk.log"; then exit 1; fi
+          CHARACTER_SELF_TEST=1 godot --headless --path game/godot res://scenes/development/CharacterAnimationTest.tscn 2>&1 | tee "$RUNNER_TEMP/godot-controls.log"
+          if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$RUNNER_TEMP/godot-controls.log"; then exit 1; fi
+          godot --headless --path game/godot --script res://tests/gallery_controls.gd 2>&1 | tee "$RUNNER_TEMP/godot-gallery-controls.log"
+          if grep -E '(^|[[:space:]])(SCRIPT ERROR|ERROR):' "$RUNNER_TEMP/godot-gallery-controls.log"; then exit 1; fi
           for scene in AssetGallery CharacterAnimationTest ScaleReference QABenchmark; do
             log="$RUNNER_TEMP/godot-$scene.log"
             godot --headless --path game/godot --quit-after 10 "res://scenes/development/$scene.tscn" 2>&1 | tee "$log"

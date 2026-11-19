@@ -76,9 +76,11 @@ All road tiles are ground geometry with no collision; the ground plane handles w
 | `tree_small` | `tree_small.glb` | 3 | yes | Young tree/park detail |
 | `tree_palm` | `tree_palm.glb` | 3 | yes | Palm for warmer districts |
 
+These seven imported Nature Kit trees are sufficient for the initial tree library. Bushes, rocks and grass are not part of the Godot import. The existing extracted official Nature Kit archive at `%TEMP%/worldpulse-kenney-import/nature-kit/Models/GLTF format` contains candidates such as `plant_bush.glb`, `rock_smallA.glb` and `grass.glb` if a later scene needs ground-level dressing. No extra pack or import is needed for v0.1A.2. The separate 2D Foliage Pack remains outside the 3D import.
+
 ## Citizens - Animated Characters Protagonists 1.1 / Mini Characters 2.0
 
-| id | Source | Scale | Collision | Clips |
+| id | Source | Scale | Collision | Imported GLB clips |
 | --- | --- | --- | --- | --- |
 | `char_protagonist_criminal_male_a` | `characterMedium.fbx` | 0.478128 | no | Idle, Run, Jump |
 | `char_protagonist_cyborg_female_a` | `characterMedium.fbx` | 0.478128 | no | Idle, Run, Jump |
@@ -91,8 +93,11 @@ All road tiles are ground geometry with no collision; the ground plane handles w
 
 The four protagonists are regenerated from the FBX source by
 `tools/assets/convert-characters.py` (see [ASSET-IMPORT.md](ASSET-IMPORT.md)); their source
-file is the same skinned model with different skins. The mini characters are a separate,
-deliberately static art style kept for scale and style comparison.
+file is the same skinned model with different skins. All four can also play the
+project-authored Walk when bound to `CharacterVisualState`. Walk lives outside the
+imported GLBs and manifest; it does not add a catalog entry or change the source clips.
+The mini characters are a separate, deliberately static art style kept for scale and
+style comparison.
 
 ## Normalization
 

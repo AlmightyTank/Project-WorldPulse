@@ -2,6 +2,10 @@ class_name KenneyAssets
 extends RefCounted
 
 const MANIFEST_PATH := "res://assets/third_party/kenney/manifest.json"
+const ROAD_SOURCE_ATLAS := "res://assets/third_party/kenney/city-kit-roads/models/Textures/colormap.png"
+const ROAD_ATLAS := "res://assets/materials/roads/colormap.png"
+
+static var _road_materials: Dictionary = {}
 
 static var _assets: Array = []
 
@@ -40,6 +44,8 @@ static func instance(asset_id: String) -> Node3D:
 		return null
 	var node := packed.instantiate() as Node3D
 	node.scale = Vector3.ONE * float(asset.get("scale", 1.0))
+	if asset.get("category") == "roads":
+		_apply_road_materials(node)
 	# Idle and Run are cycles; glTF does not flag them, so loop them here.
 	var player := _find_player(node)
 	if player != null:
@@ -48,6 +54,28 @@ static func instance(asset_id: String) -> Node3D:
 				player.get_animation(clip).loop_mode = Animation.LOOP_LINEAR
 				player.play(clip)
 	return node
+
+
+static func _apply_road_materials(node: Node) -> void:
+	if node is MeshInstance3D and node.mesh != null:
+		for surface in node.mesh.get_surface_count():
+			var source := node.get_active_material(surface) as StandardMaterial3D
+			if source == null or source.albedo_texture == null:
+				continue
+			if source.albedo_texture.resource_path != ROAD_SOURCE_ATLAS:
+				continue
+			if not _road_materials.has(source):
+				# Keep imported settings/geometry; only the two asphalt atlas swatches differ.
+				var texture := load(ROAD_ATLAS) as Texture2D
+				if texture == null:
+					push_error("Cannot load road atlas: " + ROAD_ATLAS)
+					continue
+				var material := source.duplicate() as StandardMaterial3D
+				material.albedo_texture = texture
+				_road_materials[source] = material
+			node.set_surface_override_material(surface, _road_materials[source])
+	for child in node.get_children():
+		_apply_road_materials(child)
 
 
 static func _find_player(node: Node) -> AnimationPlayer:

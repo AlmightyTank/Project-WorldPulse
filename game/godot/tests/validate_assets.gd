@@ -48,9 +48,15 @@ func _initialize() -> void:
 		if asset.has("animations"):
 			_check_animations(asset_id, node, asset["animations"])
 		node.queue_free()
+		if asset.get("category") == "roads":
+			var road := KenneyAssets.instance(asset_id)
+			if road == null or not _has_road_override(road):
+				_fail(asset_id + " did not get the WorldPulse road atlas")
+			if road != null:
+				road.free()
 
 	if failures.is_empty():
-		print("PASS: %d Kenney assets load and animate." % assets.size())
+		print("PASS: %d Kenney assets load; protagonist states and road overrides validated." % assets.size())
 		quit(0)
 	else:
 		quit(1)
@@ -78,6 +84,36 @@ func _check_animations(asset_id: String, node: Node, expected: Array) -> void:
 	for listed: String in expected:
 		if not player.has_animation(listed):
 			_fail(asset_id + " lost expected clip " + listed)
+
+	var controller := CharacterVisualState.new()
+	if player.has_animation(&"Walk") or not controller.bind(player):
+		_fail(asset_id + " could not bind the separate Walk resource")
+		return
+	var walk := player.get_animation(&"Walk")
+	if walk.resource_path != CharacterVisualState.WALK_PATH or walk == player.get_animation(&"Run") or walk.length < 1.0 or walk.length > 1.3 or walk.get_track_count() == 0:
+		_fail(asset_id + " has an invalid Walk resource")
+	for clip: StringName in [&"Idle", &"Walk", &"Run", &"Jump"]:
+		var loop := Animation.LOOP_NONE if clip == &"Jump" else Animation.LOOP_LINEAR
+		if player.get_animation(clip).loop_mode != loop:
+			_fail(asset_id + " has incorrect loop mode for " + clip)
+	for state: StringName in [&"Walk", &"Run", &"Walk", &"Idle", &"Jump"]:
+		if not controller.play(state) or controller.get_state() != state:
+			_fail(asset_id + " could not transition to " + state)
+	player.advance(player.get_animation(&"Jump").length + 0.1)
+	if controller.get_state() != &"Idle":
+		_fail(asset_id + " did not return to Idle after Jump")
+
+
+func _has_road_override(node: Node) -> bool:
+	if node is MeshInstance3D and node.mesh != null:
+		for surface in node.mesh.get_surface_count():
+			var material := node.get_surface_override_material(surface) as StandardMaterial3D
+			if material != null and material.albedo_texture != null and material.albedo_texture.resource_path == KenneyAssets.ROAD_ATLAS:
+				return true
+	for child in node.get_children():
+		if _has_road_override(child):
+			return true
+	return false
 
 
 func _find_player(node: Node) -> AnimationPlayer:

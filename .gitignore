@@ -7,3 +7,10 @@ coverage/
 !.env.example
 *.log
 .godot/
+kenney_*.zip
+kenney-archives/
+worldpulse-kenney-import/
+worldpulse-asset-qa*/
+*.tmp
+*.pem
+*.key
